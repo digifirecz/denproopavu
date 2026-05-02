@@ -522,11 +522,11 @@ const isValidImageUrl = (url: string | undefined | null) => {
 };
 
 const IntroManager = () => {
-  const [heroData, setHeroData] = useState({ 
-    imageUrl: '', 
-    imageAlt: 'DEN PRO BRNO - 30. června u Janáčkova divadla',
-    moto: 'Naším cílem je přinést do města radost, povzbuzení a naději, která má skutečný přesah',
-    quote: 'Přijďte strávit den, který může něco změnit'
+  const [heroData, setHeroData] = useState({
+    imageUrl: '',
+    imageAlt: '',
+    moto: '',
+    quote: ''
   });
   const [introSections, setIntroSections] = useState<IntroSection[]>([]);
   const [infoItems, setInfoItems] = useState<IntroInfoItem[]>([]);
@@ -558,9 +558,9 @@ const IntroManager = () => {
         const data = snapshot.data();
         setHeroData({
           imageUrl: data.imageUrl || '',
-          imageAlt: data.imageAlt || 'DEN PRO BRNO',
-          moto: data.moto ?? 'Naším cílem je přinést do města radost, povzbuzení a naději, která má skutečný přesah',
-          quote: data.quote ?? 'Přijďte strávit den, který může něco změnit'
+          imageAlt: data.imageAlt || '',
+          moto: data.moto || '',
+          quote: data.quote || ''
         });
       }
     });
@@ -1292,7 +1292,7 @@ const ProgramManager = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  const [headerData, setHeaderData] = useState({ subtitle: 'Hudba a koncerty' });
+  const [headerData, setHeaderData] = useState({ subtitle: '' });
   const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
   const [headerFormData, setHeaderFormData] = useState({ subtitle: '' });
   const [isHeaderSubmitting, setIsHeaderSubmitting] = useState(false);
@@ -2143,7 +2143,7 @@ const TalkshowManager = () => {
   const [talkshowToDelete, setTalkshowToDelete] = useState<Talkshow | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const [headerData, setHeaderData] = useState({ subtitle: 'Talkshow a diskuse' });
+  const [headerData, setHeaderData] = useState({ subtitle: '' });
   const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
   const [headerFormData, setHeaderFormData] = useState({ subtitle: '' });
   const [isHeaderSubmitting, setIsHeaderSubmitting] = useState(false);
@@ -2759,7 +2759,7 @@ const FamilyProgramManager = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [activeIconIndex, setActiveIconIndex] = useState<number | null>(null);
 
-  const [headerData, setHeaderData] = useState({ subtitle: 'Program pro děti a rodiny' });
+  const [headerData, setHeaderData] = useState({ subtitle: '' });
   const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
   const [headerFormData, setHeaderFormData] = useState({ subtitle: '' });
   const [isHeaderSubmitting, setIsHeaderSubmitting] = useState(false);
@@ -3256,7 +3256,7 @@ const CommunityManager: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isIconModalOpen, setIsIconModalOpen] = useState(false);
 
-  const [headerData, setHeaderData] = useState({ subtitle: 'Prezentace organizací a zóna klidu' });
+  const [headerData, setHeaderData] = useState({ subtitle: '' });
   const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
   const [headerFormData, setHeaderFormData] = useState({ subtitle: '' });
   const [isHeaderSubmitting, setIsHeaderSubmitting] = useState(false);
@@ -3892,7 +3892,7 @@ const AboutManager = () => {
     items: [] as { name: string; description: string; link?: string; image?: string }[],
     order: 0 
   });
-  const [headerData, setHeaderData] = useState({ subtitle: 'Příběh festivalu' });
+  const [headerData, setHeaderData] = useState({ subtitle: '' });
   const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
   const [headerFormData, setHeaderFormData] = useState({ subtitle: '' });
   const [isHeaderSubmitting, setIsHeaderSubmitting] = useState(false);
@@ -4391,11 +4391,11 @@ const AboutManager = () => {
 
 const ContactManager = () => {
   const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
-  const [contactInfo, setContactInfo] = useState({ 
-    email: '', 
+  const [contactInfo, setContactInfo] = useState({
+    email: '',
     phone: '',
-    welcomeText: 'Ať už přijdete na chvíli, nebo zůstanete celý den, jste vítáni\n\nPřijďte sami, s přáteli nebo s rodinou\n\nPřijďte se podívat, odpočinout si nebo se nechat inspirovat\n\nNebojte se zeptat',
-    tagline: 'Den pro Brno je tu pro vás'
+    welcomeText: '',
+    tagline: ''
   });
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
