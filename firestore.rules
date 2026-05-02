@@ -33,10 +33,6 @@ service cloud.firestore {
       return request.resource.data;
     }
 
-    function existing() {
-      return resource.data;
-    }
-
     function isValidId(id) {
       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
@@ -81,13 +77,6 @@ service cloud.firestore {
              data.name is string && data.name.size() <= 200 &&
              data.description is string && data.description.size() <= 2000 &&
              (!('order' in data) || data.order is number);
-    }
-
-    function isValidZoneSettings(data) {
-      return data.keys().hasAll(['title', 'description', 'tag']) &&
-             data.title is string && data.title.size() <= 200 &&
-             data.description is string && data.description.size() <= 3000 &&
-             data.tag is string && data.tag.size() <= 200;
     }
 
     function isValidCommunitySection(data) {
@@ -266,17 +255,7 @@ service cloud.firestore {
 
     match /settings/{doc} {
       allow read: if true;
-      allow update: if (doc == 'stats' && 
-        incoming().diff(existing()).affectedKeys().hasOnly(['totalVisits', 'lastVisit']) &&
-        incoming().totalVisits is number &&
-        incoming().lastVisit == request.time) ||
-        (isAdmin() && (doc != 'global' || isValidGlobalSettings(incoming())));
-      allow create: if (doc == 'stats' &&
-        incoming().keys().hasAll(['totalVisits', 'lastVisit']) &&
-        incoming().keys().size() == 2 &&
-        incoming().totalVisits is number &&
-        incoming().lastVisit == request.time) ||
-        (isAdmin() && (doc != 'global' || isValidGlobalSettings(incoming())));
+      allow create, update: if isAdmin() && (doc != 'global' || isValidGlobalSettings(incoming()));
       allow delete: if isAdmin();
     }
 
