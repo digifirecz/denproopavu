@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Tyto tagy jsou dynamicky nahrazovány v server.ts obsahem z Administrace (Firebase) -->
+    <title>Den pro Brno</title>
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="description" content="Den pro Brno je kulturně-komunitní festival, který spojuje lidi a oslavuje naše město." />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Den pro Brno" />
+    <meta property="og:description" content="Kulturně-komunitní festival pro Brno" />
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LXZ60NE4HX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-LXZ60NE4HX');
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

@@ -1,0 +1,142 @@
+{
+  "entities": {
+    "musicProgram": {
+      "title": "Hudební program",
+      "description": "Seznam interpretů na festivalu",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "tag": { "type": "string" },
+        "color": { "type": "string" },
+        "desc": { "type": "string" },
+        "video": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["name", "tag", "color", "desc"]
+    },
+    "practicalInfo": {
+      "title": "Praktické informace",
+      "description": "Bloky s praktickými informacemi na webu",
+      "type": "object",
+      "properties": {
+        "label": { "type": "string" },
+        "text": { "type": "string" },
+        "sub": { "type": "string" }
+      },
+      "required": ["label", "text", "sub"]
+    },
+    "settings": {
+      "title": "Nastavení webu",
+      "description": "Globální texty a nastavení",
+      "type": "object",
+      "properties": {
+        "missionStatement": { "type": "string" },
+        "footerText": { "type": "string" }
+      }
+    },
+    "talkshow": {
+      "title": "Talkshow a diskuse",
+      "description": "Bloky s talkshow a diskusemi",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "guestsTitle": { "type": "string" },
+        "guests": { "type": "array" },
+        "moderatorName": { "type": "string" },
+        "moderatorRole": { "type": "string" },
+        "closingWordName": { "type": "string" },
+        "closingWordRole": { "type": "string" },
+        "desc": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["title", "guestsTitle", "moderatorName", "desc"]
+    },
+    "familyProgram": {
+      "title": "Program pro rodiny",
+      "description": "Sekce pro děti a rodiny",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "tag": { "type": "string" },
+        "description": { "type": "string" },
+        "activities": { "type": "array" },
+        "mainPoint": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["title", "tag", "description"]
+    },
+    "communitySection": {
+      "title": "Komunitní sekce",
+      "description": "Organizace a zóna klidu",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "tag": { "type": "string" },
+        "items": { "type": "array" },
+        "order": { "type": "number" }
+      },
+      "required": ["title", "name", "description"]
+    },
+    "introSection": {
+      "title": "Sekce vize",
+      "description": "Informační bloky v úvodu",
+      "type": "object",
+      "properties": {
+        "tag": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["tag", "title", "description"]
+    },
+    "introInfoItem": {
+      "title": "Položka info lišty",
+      "description": "Ikony a texty v červené liště úvodu",
+      "type": "object",
+      "properties": {
+        "icon": { "type": "string" },
+        "tag": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["icon", "tag", "title", "description"]
+    }
+  },
+  "firestore": {
+    "/introInfoItems/{id}": {
+      "schema": "introInfoItem",
+      "description": "Kolekce položek pro informační lištu"
+    },
+    "/introSections/{id}": {
+      "schema": "introSection",
+      "description": "Kolekce informačních bloků vize"
+    },
+    "/communitySections/{id}": {
+      "schema": "communitySection",
+      "description": "Kolekce komunitních sekcí (Organizace, Zóna klidu)"
+    },
+    "/musicProgram/{id}": {
+      "schema": "musicProgram",
+      "description": "Kolekce interpretů"
+    },
+    "/practicalInfo/{id}": {
+      "schema": "practicalInfo",
+      "description": "Kolekce praktických informací"
+    },
+    "/talkshows/{id}": {
+      "schema": "talkshow",
+      "description": "Kolekce talkshow"
+    },
+    "/familyProgram/{id}": {
+      "schema": "familyProgram",
+      "description": "Kolekce programů pro rodiny"
+    },
+    "/settings/global": {
+      "schema": "settings",
+      "description": "Globální konfigurace webu"
+    }
+  }
+}
