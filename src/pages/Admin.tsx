@@ -809,7 +809,7 @@ const IntroManager = () => {
                         value={heroData.imageAlt} 
                         onChange={e => setHeroData({...heroData, imageAlt: e.target.value})} 
                         className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-brand-teal shadow-sm" 
-                        placeholder="Např. Logo festivalu Den pro Brno - 30. června"
+                       
                       />
                     </div>
                   </div>
@@ -3758,7 +3758,7 @@ const CommunityManager: React.FC = () => {
                                 </div>
                                 <div className="space-y-1 text-left">
                                   <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Webový odkaz</label>
-                                  <input value={item.link || ''} onChange={e => handleItemChange(index, 'link', e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-[10px] text-slate-400 outline-none focus:border-brand-teal" placeholder="www.priklad.cz" />
+                                  <input value={item.link || ''} onChange={e => handleItemChange(index, 'link', e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-[10px] text-slate-400 outline-none focus:border-brand-teal" />
                                 </div>
                               </div>
                             </div>
@@ -4348,7 +4348,7 @@ const AboutManager = () => {
                                 </div>
                                 <div className="space-y-1 text-left">
                                   <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Webový odkaz</label>
-                                  <input value={item.link || ''} onChange={e => handleItemChange(idx, 'link', e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-[10px] text-slate-400 outline-none focus:border-brand-teal" placeholder="www.priklad.cz" />
+                                  <input value={item.link || ''} onChange={e => handleItemChange(idx, 'link', e.target.value)} className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-[10px] text-slate-400 outline-none focus:border-brand-teal" />
                                 </div>
                               </div>
                             </div>
@@ -4620,24 +4620,24 @@ const ContactManager = () => {
 const SettingsManager = () => {
   const [logoPassive, setLogoPassive] = useState('');
   const [logoActive, setLogoActive] = useState('');
-  const [siteTitle, setSiteTitle] = useState('Den pro Brno');
-  const [siteDescription, setSiteDescription] = useState('Den pro Brno je kulturně-komunitní festival, který spojuje lidi a oslavuje naše město.');
-  const [ogTitle, setOgTitle] = useState('Den pro Brno');
-  const [ogDescription, setOgDescription] = useState('Kulturně-komunitní festival pro Brno');
+  const [siteTitle, setSiteTitle] = useState('');
+  const [siteDescription, setSiteDescription] = useState('');
+  const [ogTitle, setOgTitle] = useState('');
+  const [ogDescription, setOgDescription] = useState('');
   const [ogImageUrl, setOgImageUrl] = useState('');
-  const [ogImageAlt, setOgImageAlt] = useState('Den pro Brno - Festival');
+  const [ogImageAlt, setOgImageAlt] = useState('');
   const [faviconUrl, setFaviconUrl] = useState('');
-  const [faviconAlt, setFaviconAlt] = useState('Favicon');
-  const [logoPassiveAlt, setLogoPassiveAlt] = useState('Logo Passive');
-  const [logoActiveAlt, setLogoActiveAlt] = useState('Logo Active');
-  const [primaryDomain, setPrimaryDomain] = useState('https://denproopavu.cz');
+  const [faviconAlt, setFaviconAlt] = useState('');
+  const [logoPassiveAlt, setLogoPassiveAlt] = useState('');
+  const [logoActiveAlt, setLogoActiveAlt] = useState('');
+  const [primaryDomain, setPrimaryDomain] = useState('');
   const [gaMeasurementId, setGaMeasurementId] = useState('');
-  const [copyrightText, setCopyrightText] = useState('© 2026 DEN PRO OPAVU');
-  const [eventDate, setEventDate] = useState('2026-05-30');
-  const [eventStartTime, setEventStartTime] = useState('10:00:00');
-  const [eventEndTime, setEventEndTime] = useState('22:00:00');
-  const [eventLocationName, setEventLocationName] = useState('u Janáčkova divadla');
-  const [eventCity, setEventCity] = useState('Brno');
+  const [copyrightText, setCopyrightText] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [eventStartTime, setEventStartTime] = useState('');
+  const [eventEndTime, setEventEndTime] = useState('');
+  const [eventLocationName, setEventLocationName] = useState('');
+  const [eventCity, setEventCity] = useState('');
   const [isUploadingPassive, setIsUploadingPassive] = useState(false);
   const [isUploadingActive, setIsUploadingActive] = useState(false);
   const [isUploadingFavicon, setIsUploadingFavicon] = useState(false);
@@ -4650,24 +4650,24 @@ const SettingsManager = () => {
         const data = doc.data();
         setLogoPassive(data.logoPassive || '');
         setLogoActive(data.logoActive || '');
-        setSiteTitle(data.title || 'Den pro Brno');
-        setSiteDescription(data.description || 'Den pro Brno je kulturně-komunitní festival, který spojuje lidi a oslavuje naše město.');
-        setOgTitle(data.ogTitle || 'Den pro Brno');
-        setOgDescription(data.ogDescription || 'Kulturně-komunitní festival pro Brno');
+        setSiteTitle(data.title || '');
+        setSiteDescription(data.description || '');
+        setOgTitle(data.ogTitle || '');
+        setOgDescription(data.ogDescription || '');
         setOgImageUrl(data.ogImageUrl || '');
-        setOgImageAlt(data.ogImageAlt || 'Den pro Brno - Festival');
+        setOgImageAlt(data.ogImageAlt || '');
         setFaviconUrl(data.faviconUrl || '');
-        setFaviconAlt(data.faviconAlt || 'Ikona webu');
-        setLogoPassiveAlt(data.logoPassiveAlt || 'Logo Den pro Brno - tmavé');
-        setLogoActiveAlt(data.logoActiveAlt || 'Logo Den pro Brno - světlé');
-        setPrimaryDomain(data.primaryDomain || 'https://denproopavu.cz');
+        setFaviconAlt(data.faviconAlt || '');
+        setLogoPassiveAlt(data.logoPassiveAlt || '');
+        setLogoActiveAlt(data.logoActiveAlt || '');
+        setPrimaryDomain(data.primaryDomain || '');
         setGaMeasurementId(data.gaMeasurementId || '');
-        setCopyrightText(data.copyright || '© 2026 DEN PRO BRNO');
-        setEventDate(data.eventDate || '2026-05-30');
-        setEventStartTime(data.eventStartTime || '10:00:00');
-        setEventEndTime(data.eventEndTime || '22:00:00');
-        setEventLocationName(data.eventLocationName || 'u Janáčkova divadla');
-        setEventCity(data.eventCity || 'Brno');
+        setCopyrightText(data.copyright || '');
+        setEventDate(data.eventDate || '');
+        setEventStartTime(data.eventStartTime || '');
+        setEventEndTime(data.eventEndTime || '');
+        setEventLocationName(data.eventLocationName || '');
+        setEventCity(data.eventCity || '');
       }
     });
   }, []);
@@ -4771,7 +4771,7 @@ const SettingsManager = () => {
               value={siteDescription} 
               onChange={e => setSiteDescription(e.target.value)} 
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-900 focus:border-brand-teal outline-none resize-none transition-all" 
-              placeholder="Krátký popis pro vyhledávače..."
+             
             />
           </div>
 
@@ -4782,7 +4782,7 @@ const SettingsManager = () => {
                 value={ogTitle} 
                 onChange={e => setOgTitle(e.target.value)} 
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-900 focus:border-brand-teal outline-none transition-all" 
-                placeholder="Zobrazí se při sdílení na FB/IG..."
+               
               />
             </div>
             <div className="space-y-2">
@@ -4791,7 +4791,7 @@ const SettingsManager = () => {
                 value={ogDescription} 
                 onChange={e => setOgDescription(e.target.value)} 
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-900 focus:border-brand-teal outline-none transition-all" 
-                placeholder="Krátký text pod titulkem při sdílení..."
+               
               />
             </div>
           </div>
@@ -4827,7 +4827,7 @@ const SettingsManager = () => {
                   value={ogImageAlt} 
                   onChange={e => setOgImageAlt(e.target.value)} 
                   className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-900 outline-none focus:border-brand-teal" 
-                  placeholder="Popis obrázku pro sociální sítě..."
+                 
                 />
               </div>
             </div>
@@ -4838,7 +4838,7 @@ const SettingsManager = () => {
               value={primaryDomain} 
               onChange={e => setPrimaryDomain(e.target.value)} 
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-900 focus:border-brand-teal outline-none transition-all font-mono text-xs" 
-              placeholder="https://denproopavu.cz"
+             
             />
             <p className="text-[10px] text-slate-400 italic ml-1">Klíčové pro SEO. Zde uveďte doménu, na které web finálně poběží.</p>
           </div>
@@ -4848,7 +4848,7 @@ const SettingsManager = () => {
           </div>
           <div className="space-y-2">
             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Copyright</label>
-            <input value={copyrightText} onChange={e => setCopyrightText(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-900 focus:border-brand-teal outline-none transition-all" placeholder="Např. © 2026 DEN PRO BRNO" />
+            <input value={copyrightText} onChange={e => setCopyrightText(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-900 focus:border-brand-teal outline-none transition-all" />
           </div>
 
           <div className="pt-6 border-t border-slate-100 space-y-6">
@@ -4903,7 +4903,7 @@ const SettingsManager = () => {
                   value={faviconAlt} 
                   onChange={e => setFaviconAlt(e.target.value)} 
                   className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-900 outline-none focus:border-brand-teal" 
-                  placeholder="Např. Ikona festivalu Den pro Brno"
+                 
                 />
               </div>
             </div>
@@ -4953,7 +4953,7 @@ const SettingsManager = () => {
                   value={logoPassiveAlt} 
                   onChange={e => setLogoPassiveAlt(e.target.value)} 
                   className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-brand-teal shadow-sm" 
-                  placeholder="Např. Logo Den pro Brno pro červené pozadí"
+                 
                 />
               </div>
             </div>
@@ -4998,7 +4998,7 @@ const SettingsManager = () => {
                   value={logoActiveAlt} 
                   onChange={e => setLogoActiveAlt(e.target.value)} 
                   className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-900 outline-none focus:border-brand-teal shadow-sm" 
-                  placeholder="Např. Tmavé logo Den pro Brno pro bílé pozadí"
+                 
                 />
               </div>
             </div>

@@ -218,13 +218,13 @@ export default function Home() {
   const [communitySections, setCommunitySections] = useState<CommunitySection[]>([]);
   const [aboutSections, setAboutSections] = useState<AboutSection[]>([]);
   const [aboutHeader, setAboutHeader] = useState<AboutHeader>({
-    subtitle: 'Příběh festivalu'
+    subtitle: ''
   });
-  const [contactInfo, setContactInfo] = useState({ 
-    email: '', 
+  const [contactInfo, setContactInfo] = useState({
+    email: '',
     phone: '',
-    welcomeText: 'Ať už přijdete na chvíli, nebo zůstanete celý den, jste vítáni\n\nPřijďte sami, s přáteli nebo s rodinou\n\nPřijďte se podívat, odpočinout si nebo se nechat inspirovat\n\nNebojte se zeptat',
-    tagline: 'Den pro Brno je tu pro vás'
+    welcomeText: '',
+    tagline: ''
   });
   const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -252,29 +252,29 @@ export default function Home() {
   }, [dataReady]);
 
   const [programHeader, setProgramHeader] = useState<ProgramHeader>({
-    topTitle: 'Lineup 2026',
-    description: 'Po celý den bude probíhat několik typů programu, mezi kterými si každý najde to své'
+    topTitle: '',
+    description: ''
   });
   const [infoHeader, setInfoHeader] = useState<InfoHeader>({
-    topTitle: 'Informace',
-    description: 'Vše, co potřebujete vědět před návštěvou festivalu'
+    topTitle: '',
+    description: ''
   });
-  const [heroData, setHeroData] = useState({ 
-    imageUrl: '', 
-    imageAlt: 'DEN PRO BRNO - 30. června u Janáčkova divadla',
-    moto: 'Naším cílem je přinést do města radost, povzbuzení a naději, která má skutečný přesah',
-    quote: 'Přijďte strávit den, který může něco změnit'
+  const [heroData, setHeroData] = useState({
+    imageUrl: '',
+    imageAlt: '',
+    moto: '',
+    quote: ''
   });
   const [globalSettings, setGlobalSettings] = useState({
     logoPassive: '',
-    logoPassiveAlt: 'Logo Den pro Opavu',
+    logoPassiveAlt: '',
     logoActive: '',
-    logoActiveAlt: 'Logo Den pro Opavu',
-    copyright: '© 2026 DEN PRO OPAVU',
-    faviconAlt: 'Ikona webu',
+    logoActiveAlt: '',
+    copyright: '',
+    faviconAlt: '',
     ogImageUrl: '',
-    ogImageAlt: 'Den pro Opavu - Festival',
-    primaryDomain: 'https://denproopavu.cz'
+    ogImageAlt: '',
+    primaryDomain: ''
   });
 
   // Fetch Global Settings (Logos, Title, etc.)
@@ -284,14 +284,14 @@ export default function Home() {
         const data = snapshot.data();
         setGlobalSettings({
           logoPassive: data.logoPassive || '',
-          logoPassiveAlt: data.logoPassiveAlt || 'Logo Den pro Opavu',
+          logoPassiveAlt: data.logoPassiveAlt || '',
           logoActive: data.logoActive || '',
-          logoActiveAlt: data.logoActiveAlt || 'Logo Den pro Opavu',
-          copyright: data.copyright || '© 2026 DEN PRO OPAVU',
-          faviconAlt: data.faviconAlt || 'Ikona webu',
+          logoActiveAlt: data.logoActiveAlt || '',
+          copyright: data.copyright || '',
+          faviconAlt: data.faviconAlt || '',
           ogImageUrl: data.ogImageUrl || '',
-          ogImageAlt: data.ogImageAlt || 'Den pro Opavu - Festival',
-          primaryDomain: data.primaryDomain || 'https://denproopavu.cz'
+          ogImageAlt: data.ogImageAlt || '',
+          primaryDomain: data.primaryDomain || ''
         });
         if (data.title) {
           document.title = data.title;
@@ -316,7 +316,7 @@ export default function Home() {
           canonical.setAttribute('rel', 'canonical');
           document.head.appendChild(canonical);
         }
-        const baseDomain = (data.primaryDomain || 'https://denproopavu.cz').replace(/\/$/, '');
+        const baseDomain = (data.primaryDomain || '').replace(/\/$/, '');
         canonical.setAttribute('href', baseDomain + window.location.pathname);
 
         // Structured Data (JSON-LD)
@@ -494,9 +494,9 @@ export default function Home() {
         const data = snapshot.data();
         setHeroData({
           imageUrl: data.imageUrl || '',
-          imageAlt: data.imageAlt || 'DEN PRO BRNO',
-          moto: data.moto ?? 'Naším cílem je přinést do města radost, povzbuzení a naději, která má skutečný přesah',
-          quote: data.quote ?? 'Přijďte strávit den, který může něco změnit'
+          imageAlt: data.imageAlt || '',
+          moto: data.moto || '',
+          quote: data.quote || ''
         });
       }
     }, (err) => console.error("Hero Data Error:", err));

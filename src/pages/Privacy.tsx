@@ -8,10 +8,10 @@ import { doc, getDoc } from 'firebase/firestore';
 export default function Privacy() {
   const navigate = useNavigate();
   const [settings, setSettings] = useState({
-    title: 'Den pro Opavh',
-    email: 'info@denproopavu.cz',
-    copyright: '© 2026 DEN PRO OPAVU',
-    updatedAt: '29. 04. 2026'
+    title: '',
+    email: '',
+    copyright: '',
+    updatedAt: ''
   });
   const [loading, setLoading] = useState(true);
 
@@ -25,8 +25,8 @@ export default function Privacy() {
 
         if (globalDoc.exists()) {
           const data = globalDoc.data();
-          dynamicSettings.title = data.title || settings.title;
-          dynamicSettings.copyright = data.copyright || settings.copyright;
+          dynamicSettings.title = data.title || '';
+          dynamicSettings.copyright = data.copyright || '';
           if (data.updatedAt && typeof data.updatedAt.toDate === 'function') {
             const date = data.updatedAt.toDate();
             dynamicSettings.updatedAt = date.toLocaleDateString('cs-CZ');
@@ -41,7 +41,7 @@ export default function Privacy() {
 
         if (contactDoc.exists()) {
           const data = contactDoc.data();
-          dynamicSettings.email = data.email || settings.email;
+          dynamicSettings.email = data.email || '';
         }
 
         setSettings(dynamicSettings);

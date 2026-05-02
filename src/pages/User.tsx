@@ -115,7 +115,7 @@ export default function User() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   required
-                  placeholder="••••••••"
+                 
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-5 py-4 text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-brand-teal/50 transition-colors"
                 />
               </div>
@@ -131,7 +131,7 @@ export default function User() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
-                    placeholder="••••••••"
+                   
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-5 py-4 text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-brand-teal/50 transition-colors"
                   />
                 </div>
@@ -146,7 +146,7 @@ export default function User() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    placeholder="••••••••"
+                   
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-5 py-4 text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-brand-teal/50 transition-colors"
                   />
                 </div>
