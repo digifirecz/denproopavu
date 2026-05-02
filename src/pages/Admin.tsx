@@ -20,8 +20,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Reorder } from 'motion/react';
 import { 
-  BarChart3, 
-  Users, 
+  Users,
   Settings as SettingsIcon, 
   Music, 
   Info, 
@@ -504,10 +503,6 @@ const AdminDashboard = ({ artistsCount, infoCount, talkshowsCount, familyCount, 
       ))}
     </div>
 
-    <div className="bg-slate-50 border border-slate-200 border-dashed rounded-3xl p-12 text-center space-y-4 text-slate-900">
-      <BarChart3 size={40} className="mx-auto text-slate-200" />
-      <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Statistiky návštěvnosti budou k dispozici brzy</p>
-    </div>
     </div>
   );
 };

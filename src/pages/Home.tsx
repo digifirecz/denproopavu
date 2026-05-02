@@ -2,7 +2,7 @@ import { motion, useScroll, AnimatePresence } from 'motion/react';
 import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy, doc, addDoc, serverTimestamp, setDoc, getDoc, increment } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, doc, addDoc, serverTimestamp, setDoc, getDoc } from 'firebase/firestore';
 import { 
   MapPin, 
   Calendar, 
@@ -512,20 +512,6 @@ export default function Home() {
 
 // Fetch Intro Info Items
   useEffect(() => {
-    // Increment visit counter
-    const trackVisit = async () => {
-      try {
-        const visitRef = doc(db, 'settings', 'stats');
-        await setDoc(visitRef, { 
-          totalVisits: increment(1),
-          lastVisit: serverTimestamp()
-        }, { merge: true });
-      } catch (e) {
-        console.error("Error tracking visit:", e);
-      }
-    };
-    trackVisit();
-    
     // Load GA Script
     const loadGA = async () => {
       const consent = localStorage.getItem('cookie-consent');
