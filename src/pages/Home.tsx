@@ -267,14 +267,14 @@ export default function Home() {
   });
   const [globalSettings, setGlobalSettings] = useState({
     logoPassive: '',
-    logoPassiveAlt: 'Logo Den pro Brno',
+    logoPassiveAlt: 'Logo Den pro Opavu',
     logoActive: '',
-    logoActiveAlt: 'Logo Den pro Brno',
-    copyright: '© 2026 DEN PRO BRNO',
+    logoActiveAlt: 'Logo Den pro Opavu',
+    copyright: '© 2026 DEN PRO OPAVU',
     faviconAlt: 'Ikona webu',
     ogImageUrl: '',
-    ogImageAlt: 'Den pro Brno - Festival',
-    primaryDomain: 'https://denprobrno.cz'
+    ogImageAlt: 'Den pro Opavu - Festival',
+    primaryDomain: 'https://denproopavu.cz'
   });
 
   // Fetch Global Settings (Logos, Title, etc.)
@@ -284,14 +284,14 @@ export default function Home() {
         const data = snapshot.data();
         setGlobalSettings({
           logoPassive: data.logoPassive || '',
-          logoPassiveAlt: data.logoPassiveAlt || 'Logo Den pro Brno',
+          logoPassiveAlt: data.logoPassiveAlt || 'Logo Den pro Opavu',
           logoActive: data.logoActive || '',
-          logoActiveAlt: data.logoActiveAlt || 'Logo Den pro Brno',
-          copyright: data.copyright || '© 2026 DEN PRO BRNO',
+          logoActiveAlt: data.logoActiveAlt || 'Logo Den pro Opavu',
+          copyright: data.copyright || '© 2026 DEN PRO OPAVU',
           faviconAlt: data.faviconAlt || 'Ikona webu',
           ogImageUrl: data.ogImageUrl || '',
-          ogImageAlt: data.ogImageAlt || 'Den pro Brno - Festival',
-          primaryDomain: data.primaryDomain || 'https://denprobrno.cz'
+          ogImageAlt: data.ogImageAlt || 'Den pro Opavu - Festival',
+          primaryDomain: data.primaryDomain || 'https://denproopavu.cz'
         });
         if (data.title) {
           document.title = data.title;
@@ -316,7 +316,7 @@ export default function Home() {
           canonical.setAttribute('rel', 'canonical');
           document.head.appendChild(canonical);
         }
-        const baseDomain = (data.primaryDomain || 'https://denprobrno.cz').replace(/\/$/, '');
+        const baseDomain = (data.primaryDomain || 'https://denproopavu.cz').replace(/\/$/, '');
         canonical.setAttribute('href', baseDomain + window.location.pathname);
 
         // Structured Data (JSON-LD)

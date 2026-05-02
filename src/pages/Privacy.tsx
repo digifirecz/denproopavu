@@ -8,9 +8,9 @@ import { doc, getDoc } from 'firebase/firestore';
 export default function Privacy() {
   const navigate = useNavigate();
   const [settings, setSettings] = useState({
-    title: 'Den pro Brno',
-    email: 'info@denprobrno.cz',
-    copyright: '© 2026 DEN PRO BRNO',
+    title: 'Den pro Opavh',
+    email: 'info@denproopavu.cz',
+    copyright: '© 2026 DEN PRO OPAVU',
     updatedAt: '29. 04. 2026'
   });
   const [loading, setLoading] = useState(true);

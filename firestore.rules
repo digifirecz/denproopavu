@@ -20,9 +20,9 @@ service cloud.firestore {
       return isSignedIn() && (
         // Explicitly allow the primary owners even if verification flag is missing in dev
         ('email' in request.auth.token && request.auth.token.email.lower() == 'filipmachala88@gmail.com') ||
-        ('email' in request.auth.token && request.auth.token.email.lower() == 'info@denprobrno.cz') ||
+        ('email' in request.auth.token && request.auth.token.email.lower() == 'info@denproopavu.cz') ||
         (isEmailVerified() && (
-          ('email' in request.auth.token && request.auth.token.email.lower() == 'admin@denprobrno.cz') ||
+          ('email' in request.auth.token && request.auth.token.email.lower() == 'admin@denproopavu.cz') ||
           ('email' in request.auth.token && request.auth.token.email.lower().matches('.*@admin\\.cz$')) ||
           exists(/databases/$(database)/documents/admins/$(request.auth.uid))
         ))

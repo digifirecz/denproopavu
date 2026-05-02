@@ -4630,9 +4630,9 @@ const SettingsManager = () => {
   const [faviconAlt, setFaviconAlt] = useState('Favicon');
   const [logoPassiveAlt, setLogoPassiveAlt] = useState('Logo Passive');
   const [logoActiveAlt, setLogoActiveAlt] = useState('Logo Active');
-  const [primaryDomain, setPrimaryDomain] = useState('https://denprobrno.cz');
+  const [primaryDomain, setPrimaryDomain] = useState('https://denproopavu.cz');
   const [gaMeasurementId, setGaMeasurementId] = useState('');
-  const [copyrightText, setCopyrightText] = useState('© 2026 DEN PRO BRNO');
+  const [copyrightText, setCopyrightText] = useState('© 2026 DEN PRO OPAVU');
   const [eventDate, setEventDate] = useState('2026-05-30');
   const [eventStartTime, setEventStartTime] = useState('10:00:00');
   const [eventEndTime, setEventEndTime] = useState('22:00:00');
@@ -4660,7 +4660,7 @@ const SettingsManager = () => {
         setFaviconAlt(data.faviconAlt || 'Ikona webu');
         setLogoPassiveAlt(data.logoPassiveAlt || 'Logo Den pro Brno - tmavé');
         setLogoActiveAlt(data.logoActiveAlt || 'Logo Den pro Brno - světlé');
-        setPrimaryDomain(data.primaryDomain || 'https://denprobrno.cz');
+        setPrimaryDomain(data.primaryDomain || 'https://denproopavu.cz');
         setGaMeasurementId(data.gaMeasurementId || '');
         setCopyrightText(data.copyright || '© 2026 DEN PRO BRNO');
         setEventDate(data.eventDate || '2026-05-30');
@@ -4838,7 +4838,7 @@ const SettingsManager = () => {
               value={primaryDomain} 
               onChange={e => setPrimaryDomain(e.target.value)} 
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-900 focus:border-brand-teal outline-none transition-all font-mono text-xs" 
-              placeholder="https://denprobrno.cz"
+              placeholder="https://denproopavu.cz"
             />
             <p className="text-[10px] text-slate-400 italic ml-1">Klíčové pro SEO. Zde uveďte doménu, na které web finálně poběží.</p>
           </div>

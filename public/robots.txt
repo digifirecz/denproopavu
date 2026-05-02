@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/*
 
-Sitemap: https://denprobrno.cz/sitemap.xml
+Sitemap: https://denproopavu.cz/sitemap.xml
