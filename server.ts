@@ -110,10 +110,10 @@ async function startServer() {
         }
       }
       
-      const title = settings.title || '';
-      const description = settings.description || '';
-      const ogTitle = settings.ogTitle || '';
-      const ogDescription = settings.ogDescription || '';
+      const title = settings.title || 'Den pro Brno';
+      const description = settings.description || 'Den pro Brno je kulturně-komunitní festival, který spojuje lidi a oslavuje naše město.';
+      const ogTitle = settings.ogTitle || title;
+      const ogDescription = settings.ogDescription || description;
       const faviconUrl = settings.faviconUrl || '';
       const logoUrl = settings.logoPassive || '';
       const heroImageUrl = heroData.imageUrl || '';

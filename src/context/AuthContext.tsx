@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { onSnapshot, doc } from 'firebase/firestore';
@@ -19,6 +20,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
+      if (user) {
+        Sentry.setUser({ id: user.uid, email: user.email ?? undefined });
+      } else {
+        Sentry.setUser(null);
+      }
     });
 
     // Listen to global settings for favicon

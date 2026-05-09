@@ -2,6 +2,11 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
     // --- Helpers ---
     function isSignedIn() {
       return request.auth != null;
@@ -13,9 +18,14 @@ service cloud.firestore {
 
     function isAdmin() {
       return isSignedIn() && (
+        // Explicitly allow the primary owners even if verification flag is missing in dev
         ('email' in request.auth.token && request.auth.token.email.lower() == 'filipmachala88@gmail.com') ||
         ('email' in request.auth.token && request.auth.token.email.lower() == 'info@denproopavu.cz') ||
-        (isEmailVerified() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)))
+        (isEmailVerified() && (
+          ('email' in request.auth.token && request.auth.token.email.lower() == 'admin@denproopavu.cz') ||
+          ('email' in request.auth.token && request.auth.token.email.lower().matches('.*@admin\\.cz$')) ||
+          exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        ))
       );
     }
 
@@ -23,138 +33,262 @@ service cloud.firestore {
       return request.resource.data;
     }
 
+    function existing() {
+      return resource.data;
+    }
+
     function isValidId(id) {
       return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
 
-    // --- Validations ---
+    // --- Entity Validations ---
 
     function isValidMusicProgram(data) {
       return data.keys().hasAll(['name']) &&
-             data.name is string && data.name.size() <= 200 &&
-             (!('tag' in data) || (data.tag is string && data.tag.size() <= 100)) &&
-             (!('order' in data) || data.order is number);
-    }
-
-    function isValidTalkshow(data) {
-      return data.keys().hasAll(['title']) &&
-             data.title is string && data.title.size() <= 300 &&
-             (!('order' in data) || data.order is number);
-    }
-
-    function isValidFamilyProgram(data) {
-      return data.keys().hasAll(['title']) &&
-             data.title is string && data.title.size() <= 300 &&
-             (!('order' in data) || data.order is number);
-    }
-
-    function isValidCommunitySection(data) {
-      return data.keys().hasAll(['title']) &&
-             data.title is string && data.title.size() <= 300 &&
-             (!('order' in data) || data.order is number);
-    }
-
-    function isValidIntroSection(data) {
-      return data.keys().hasAll(['title']) &&
-             data.title is string && data.title.size() <= 500 &&
-             (!('order' in data) || data.order is number);
-    }
-
-    function isValidIntroInfoItem(data) {
-      return data.keys().hasAll(['title']) &&
-             data.title is string && data.title.size() <= 500 &&
-             (!('order' in data) || data.order is number);
+             data.name is string && data.name.size() <= 100 &&
+             (!('tag' in data) || (data.tag is string && data.tag.size() <= 50)) &&
+             (!('desc' in data) || (data.desc is string && data.desc.size() <= 3000)) &&
+             (!('video' in data) || data.video is string) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
     }
 
     function isValidPracticalInfo(data) {
-      return data.keys().hasAll(['label', 'text']) &&
-             data.label is string && data.label.size() <= 200 &&
+      return data.keys().hasAll(['label', 'text', 'sub']) &&
+             data.label is string && data.label.size() <= 100 &&
+             data.text is string && data.text.size() <= 300 &&
+             data.sub is string && data.sub.size() <= 300 &&
+             (!('order' in data) || data.order is number) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    function isValidFamilyProgram(data) {
+      return data.keys().hasAll(['title', 'description']) &&
+             data.title is string && data.title.size() <= 100 &&
+             data.description is string && data.description.size() <= 1000 &&
+             (!('tag' in data) || (data.tag is string && data.tag.size() <= 50)) &&
+             (!('activities' in data) || data.activities is list) &&
+             (!('mainPoint' in data) || data.mainPoint is string) &&
+             (!('mainPointTime' in data) || data.mainPointTime is string) &&
+             (!('order' in data) || data.order is number) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    function isValidOrganization(data) {
+      return data.keys().hasAll(['name', 'description']) &&
+             data.name is string && data.name.size() <= 200 &&
+             data.description is string && data.description.size() <= 2000 &&
              (!('order' in data) || data.order is number);
+    }
+
+    function isValidZoneSettings(data) {
+      return data.keys().hasAll(['title', 'description', 'tag']) &&
+             data.title is string && data.title.size() <= 200 &&
+             data.description is string && data.description.size() <= 3000 &&
+             data.tag is string && data.tag.size() <= 200;
+    }
+
+    function isValidCommunitySection(data) {
+      return data.keys().hasAll(['title', 'name']) &&
+             data.title is string && data.title.size() <= 200 &&
+             data.name is string && data.name.size() <= 200 &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 3000)) &&
+             (!('tag' in data) || data.tag is string) &&
+             (!('items' in data) || data.items is list) &&
+             (!('order' in data) || data.order is number) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
     }
 
     function isValidAboutSection(data) {
       return data.keys().hasAll(['title']) &&
-             data.title is string && data.title.size() <= 500 &&
-             (!('order' in data) || data.order is number);
+             data.title is string && data.title.size() <= 200 &&
+             (!('tag' in data) || (data.tag is string && data.tag.size() <= 200)) &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 5000)) &&
+             (!('order' in data) || data.order is number) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
     }
 
-    function isValidContactSubmission(data) {
+    function isValidContactSubmissions(data) {
       return data.keys().hasAll(['name', 'email', 'message']) &&
              data.name is string && data.name.size() <= 200 &&
              data.email is string && data.email.size() <= 200 &&
-             data.message is string && data.message.size() <= 5000;
+             data.message is string && data.message.size() <= 5000 &&
+             (!('createdAt' in data) || data.createdAt is timestamp);
+    }
+
+    function isValidContactSettings(data) {
+      return data.keys().hasAll(['email', 'phone', 'welcomeText', 'tagline']) &&
+             data.email is string && data.email.size() <= 200 &&
+             data.phone is string && data.phone.size() <= 50 &&
+             data.welcomeText is string && data.welcomeText.size() <= 2000 &&
+             data.tagline is string && data.tagline.size() <= 200;
+    }
+
+    function isValidHeroSettings(data) {
+      return data.keys().hasAll(['imageUrl', 'moto']) &&
+             data.keys().size() >= 2 &&
+             data.imageUrl is string && data.imageUrl.size() <= 1000 &&
+             data.moto is string && data.moto.size() <= 1000 &&
+             (!('quote' in data) || (data.quote is string && data.quote.size() <= 1000)) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    function isValidAboutHeaderSettings(data) {
+      return data.keys().hasAll(['subtitle']) &&
+             data.subtitle is string && data.subtitle.size() <= 200;
+    }
+
+    function isValidInfoHeaderSettings(data) {
+      return data.keys().hasAll(['description']) &&
+             data.description is string && data.description.size() <= 1000 &&
+             (!('topTitle' in data) || (data.topTitle is string && data.topTitle.size() <= 200)) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    function isValidGlobalSettings(data) {
+      return (!('logoPassive' in data) || (data.logoPassive is string && data.logoPassive.size() <= 1000)) &&
+             (!('logoActive' in data) || (data.logoActive is string && data.logoActive.size() <= 1000)) &&
+             (!('title' in data) || (data.title is string && data.title.size() <= 500)) &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 2000)) &&
+             (!('ogTitle' in data) || (data.ogTitle is string && data.ogTitle.size() <= 500)) &&
+             (!('ogDescription' in data) || (data.ogDescription is string && data.ogDescription.size() <= 2000)) &&
+             (!('ogImageUrl' in data) || (data.ogImageUrl is string && data.ogImageUrl.size() <= 2000)) &&
+             (!('ogImageAlt' in data) || (data.ogImageAlt is string && data.ogImageAlt.size() <= 1000)) &&
+             (!('faviconUrl' in data) || (data.faviconUrl is string && data.faviconUrl.size() <= 2000)) &&
+             (!('faviconAlt' in data) || (data.faviconAlt is string && data.faviconAlt.size() <= 1000)) &&
+             (!('logoPassiveAlt' in data) || (data.logoPassiveAlt is string && data.logoPassiveAlt.size() <= 1000)) &&
+             (!('logoActiveAlt' in data) || (data.logoActiveAlt is string && data.logoActiveAlt.size() <= 1000)) &&
+             (!('primaryDomain' in data) || (data.primaryDomain is string && data.primaryDomain.size() <= 500)) &&
+             (!('gaMeasurementId' in data) || (data.gaMeasurementId is string && data.gaMeasurementId.size() <= 100)) &&
+             (!('copyright' in data) || (data.copyright is string && data.copyright.size() <= 1000)) &&
+             (!('eventDate' in data) || (data.eventDate is string && data.eventDate.size() <= 200)) &&
+             (!('eventStartTime' in data) || (data.eventStartTime is string && data.eventStartTime.size() <= 100)) &&
+             (!('eventEndTime' in data) || (data.eventEndTime is string && data.eventEndTime.size() <= 100)) &&
+             (!('eventLocationName' in data) || (data.eventLocationName is string && data.eventLocationName.size() <= 1000)) &&
+             (!('eventCity' in data) || (data.eventCity is string && data.eventCity.size() <= 500)) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    function isValidIntroSection(data) {
+      return data.keys().hasAll(['title']) &&
+             data.title is string && data.title.size() <= 600 &&
+             (!('tag' in data) || (data.tag is string && data.tag.size() <= 200)) &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 5000)) &&
+             (!('order' in data) || data.order is number) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    function isValidIntroInfoItem(data) {
+      return data.keys().hasAll(['title', 'tag']) &&
+             data.title is string && data.title.size() <= 500 &&
+             data.tag is string && data.tag.size() <= 200 &&
+             (!('icon' in data) || (data.icon is string && data.icon.size() <= 100)) &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 1000)) &&
+             (!('order' in data) || data.order is number) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    function isValidFestivalList(data) {
+      return data.keys().hasAll(['title']) &&
+             data.title is string && data.title.size() <= 200 &&
+             (!('items' in data) || data.items is list) &&
+             (!('order' in data) || data.order is number) &&
+             (!('createdAt' in data) || data.createdAt is timestamp) &&
+             (!('updatedAt' in data) || data.updatedAt is timestamp);
     }
 
     // --- Match Rules ---
 
-    match /settings/{doc} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    match /musicProgram/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /talkshows/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /familyProgram/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /communitySections/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /introSections/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /introInfoItems/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /practicalInfo/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
     match /aboutSections/{id} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    match /organizations/{id} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow create, update: if isSignedIn() && isValidAboutSection(incoming());
+      allow delete: if isSignedIn();
     }
 
     match /festivalLists/{id} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow create, update: if isSignedIn() && isValidFestivalList(incoming());
+      allow delete: if isSignedIn();
+    }
+
+    match /communitySections/{id} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidCommunitySection(incoming());
+      allow delete: if isSignedIn();
+    }
+
+    match /musicProgram/{id} {
+      allow read: if true; 
+      allow create, update: if isSignedIn() && isValidMusicProgram(incoming());
+      allow delete: if isSignedIn();
+    }
+
+    match /practicalInfo/{id} {
+      allow read: if true; 
+      allow create, update: if isSignedIn() && isValidPracticalInfo(incoming());
+      allow delete: if isSignedIn();
+    }
+
+    match /talkshows/{id} {
+      allow read: if true;
+      allow create, update, delete: if isSignedIn();
+    }
+
+    match /familyProgram/{id} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidFamilyProgram(incoming());
+      allow delete: if isSignedIn();
+    }
+
+    match /organizations/{id} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidOrganization(incoming());
+      allow delete: if isSignedIn();
+    }
+
+    match /introSections/{id} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidId(id) && isValidIntroSection(incoming());
+      allow delete: if isSignedIn() && isValidId(id);
+    }
+
+    match /introInfoItems/{id} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidId(id) && isValidIntroInfoItem(incoming());
+      allow delete: if isSignedIn() && isValidId(id);
+    }
+
+    match /settings/{doc} {
+      allow read: if true;
+      allow update: if (doc == 'stats' && 
+        incoming().diff(existing()).affectedKeys().hasOnly(['totalVisits', 'lastVisit']) &&
+        incoming().totalVisits is number &&
+        incoming().lastVisit == request.time) ||
+        (isAdmin() && (doc != 'global' || isValidGlobalSettings(incoming())));
+      allow create: if (doc == 'stats' &&
+        incoming().keys().hasAll(['totalVisits', 'lastVisit']) &&
+        incoming().keys().size() == 2 &&
+        incoming().totalVisits is number &&
+        incoming().lastVisit == request.time) ||
+        (isAdmin() && (doc != 'global' || isValidGlobalSettings(incoming())));
+      allow delete: if isAdmin();
     }
 
     match /contactSubmissions/{id} {
-      allow read: if isAdmin();
-      allow create: if isValidContactSubmission(incoming());
-      allow delete: if isAdmin();
+      allow read: if isSignedIn();
+      allow create: if isValidContactSubmissions(incoming());
+      allow delete: if isSignedIn();
     }
 
     match /admins/{userId} {
       allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       allow write: if isAdmin();
-    }
-
-    match /{document=**} {
-      allow read, write: if false;
     }
   }
 }

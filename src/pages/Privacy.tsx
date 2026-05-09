@@ -25,8 +25,8 @@ export default function Privacy() {
 
         if (globalDoc.exists()) {
           const data = globalDoc.data();
-          dynamicSettings.title = data.title || '';
-          dynamicSettings.copyright = data.copyright || '';
+          dynamicSettings.title = data.title || settings.title;
+          dynamicSettings.copyright = data.copyright || settings.copyright;
           if (data.updatedAt && typeof data.updatedAt.toDate === 'function') {
             const date = data.updatedAt.toDate();
             dynamicSettings.updatedAt = date.toLocaleDateString('cs-CZ');
@@ -41,7 +41,7 @@ export default function Privacy() {
 
         if (contactDoc.exists()) {
           const data = contactDoc.data();
-          dynamicSettings.email = data.email || '';
+          dynamicSettings.email = data.email || settings.email;
         }
 
         setSettings(dynamicSettings);
@@ -155,7 +155,7 @@ export default function Privacy() {
       {/* Simple Footer */}
       <footer className="py-12 border-t border-slate-200 bg-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">{settings.copyright || `© ${new Date().getFullYear()} ${settings.title}`} — VYROBENO S LÁSKOU K BRNU</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">{settings.copyright || `© ${new Date().getFullYear()} ${settings.title}`}</p>
         </div>
       </footer>
     </div>
