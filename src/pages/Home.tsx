@@ -32,7 +32,10 @@ import {
   Coffee,
   Rocket,
   Palette,
-  ExternalLink
+  ExternalLink,
+  Download,
+  Facebook,
+  Instagram
 } from 'lucide-react';
 
 import React from 'react';
@@ -269,6 +272,9 @@ export default function Home() {
     moto: 'Naším cílem je přinést do města radost, povzbuzení a naději, která má skutečný přesah',
     quote: 'Přijďte strávit den, který může něco změnit'
   });
+  const [programImageUrl, setProgramImageUrl] = useState('');
+  const [isProgramLightboxOpen, setIsProgramLightboxOpen] = useState(false);
+
   const [globalSettings, setGlobalSettings] = useState({
     logoPassive: '',
     logoPassiveAlt: '',
@@ -278,7 +284,9 @@ export default function Home() {
     faviconAlt: '',
     ogImageUrl: '',
     ogImageAlt: '',
-    primaryDomain: ''
+    primaryDomain: '',
+    facebookUrl: '',
+    instagramUrl: ''
   });
 
   // Fetch Global Settings (Logos, Title, etc.)
@@ -295,7 +303,9 @@ export default function Home() {
           faviconAlt: data.faviconAlt || '',
           ogImageUrl: data.ogImageUrl || '',
           ogImageAlt: data.ogImageAlt || '',
-          primaryDomain: data.primaryDomain || ''
+          primaryDomain: data.primaryDomain || '',
+          facebookUrl: data.facebookUrl || '',
+          instagramUrl: data.instagramUrl || ''
         });
         if (data.title) {
           document.title = data.title;
@@ -498,6 +508,13 @@ export default function Home() {
         });
       }
     }, (err) => console.error("Hero Data Error:", err));
+  }, []);
+
+  // Fetch Program Image
+  useEffect(() => {
+    return onSnapshot(doc(db, 'settings', 'programImage'), (snap) => {
+      if (snap.exists()) setProgramImageUrl(snap.data().url || '');
+    });
   }, []);
 
   // Fetch Intro Sections
@@ -864,6 +881,55 @@ export default function Home() {
             <p className="text-sm md:text-base font-light opacity-60 tracking-wider max-w-xl mx-auto leading-relaxed">
               {programHeader.description}
             </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-16"
+          >
+            <div className="mb-5 text-center">
+              <h3 className="text-2xl font-bold tracking-tight text-black">Harmonogram</h3>
+            </div>
+            {isValidImageUrl(programImageUrl) ? (
+              <div className="flex flex-col items-center gap-6">
+                <div
+                  className="w-full max-w-lg rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.10)] border border-black/5 cursor-zoom-in"
+                  onClick={() => setIsProgramLightboxOpen(true)}
+                >
+                  <img
+                    src={programImageUrl}
+                    alt="Program festivalu"
+                    className="w-full h-auto hover:scale-[1.02] transition-transform duration-500"
+                    referrerPolicy="no-referrer"
+                    loading="lazy"
+                    onError={() => setProgramImageUrl('')}
+                  />
+                </div>
+                <a
+                  href={programImageUrl}
+                  download="program-festivalu.png"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 px-5 py-3 bg-black/8 text-black/50 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-black/12 hover:text-black/70 hover:scale-[1.03] active:scale-95 transition-all"
+                >
+                  <Download size={14} />
+                  Stáhnout program
+                </a>
+              </div>
+            ) : (
+              <div className="rounded-3xl border-2 border-dashed border-black/10 bg-black/[0.02] py-20 px-8 flex flex-col items-center justify-center text-center gap-5">
+                <div className="w-16 h-16 rounded-2xl bg-black/5 flex items-center justify-center">
+                  <Calendar size={28} className="text-black/20" />
+                </div>
+                <div>
+                  <p className="text-lg font-bold tracking-tight text-black/30 uppercase">Na programu se pracuje</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-black/20 mt-2">Kompletní harmonogram dne zveřejníme brzy</p>
+                </div>
+              </div>
+            )}
           </motion.div>
 
           <div className="mb-6 text-center relative pt-2">
@@ -1498,6 +1564,7 @@ export default function Home() {
               ))
             )}
           </div>
+
         </div>
       </section>
 
@@ -1518,6 +1585,20 @@ export default function Home() {
                 )}
                 {contactInfo.tagline && contactInfo.tagline.trim() !== '' && (
                   <p className="text-brand-teal font-black pt-2 uppercase">{contactInfo.tagline}</p>
+                )}
+                {(globalSettings.facebookUrl || globalSettings.instagramUrl) && (
+                  <div className="flex items-center gap-3 pt-2">
+                    {globalSettings.facebookUrl && (
+                      <a href={globalSettings.facebookUrl} target="_blank" rel="noopener noreferrer" className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-brand-teal hover:text-black transition-all">
+                        <Facebook size={26} />
+                      </a>
+                    )}
+                    {globalSettings.instagramUrl && (
+                      <a href={globalSettings.instagramUrl} target="_blank" rel="noopener noreferrer" className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center text-white/40 hover:bg-brand-teal hover:text-black transition-all">
+                        <Instagram size={26} />
+                      </a>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -1640,6 +1721,37 @@ export default function Home() {
         </div>
       </footer>
     </motion.div>
+
+      <AnimatePresence>
+        {isProgramLightboxOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[9998] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-10"
+            onClick={() => setIsProgramLightboxOpen(false)}
+          >
+            <button
+              className="absolute top-5 right-5 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all"
+              onClick={() => setIsProgramLightboxOpen(false)}
+            >
+              <X size={20} />
+            </button>
+            <motion.img
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              src={programImageUrl}
+              alt="Program festivalu"
+              className="max-w-full max-h-full h-auto w-auto rounded-2xl shadow-2xl"
+              referrerPolicy="no-referrer"
+              onClick={e => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

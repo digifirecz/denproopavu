@@ -9,7 +9,8 @@ Tato aplikace slouží jako správa kulturně-komunitního festivalu "Den pro Br
 3. [Lokální vývoj](#3-lokální-vývoj)
 4. [Sestavení a nasazení](#4-sestavení-build-a-nasazení)
 5. [Firebase a databáze](#5-firebase-a-databáze)
-6. [Error handling](#6-error-handling)
+6. [CORS a Firebase Storage](#6-cors-a-firebase-storage)
+7. [Error handling](#7-error-handling)
 
 ## 1. Technologický stack
 
@@ -96,7 +97,7 @@ VITE_FIREBASE_MEASUREMENT_ID=
 VITE_SENTRY_DSN=
 ```
 
-Hodnoty pro Firebase najdeš v [Firebase konzoli](https://console.firebase.google.com) → projekt `den-pro-brno` → Project Settings → Your apps. Sentry DSN najdeš v Sentry → Settings → Projects → Client Keys.
+Hodnoty pro Firebase najdeš v [Firebase konzoli](https://console.firebase.google.com) → projekt `den-pro-brno` → **Settings → General → Your apps**. Sentry DSN najdeš v Sentry → **Settings → Projects → vybraný projekt → Settings** (levý panel) → **SDK Setup → Client Keys (DSN)**.
 
 > Všechny `VITE_*` proměnné jsou součástí výsledného JS bundle — neukládej sem tajné serverové klíče.
 
@@ -127,7 +128,53 @@ Po každé změně kteréhokoli souboru je nutné pravidla nasadit — jinak zů
 firebase deploy --only firestore:rules,storage
 ```
 
-## 6. Error handling
+## 6. CORS a Firebase Storage
+
+### Co je CORS
+
+CORS (Cross-Origin Resource Sharing) je bezpečnostní mechanismus prohlížeče. Pokud aplikace běžící na jedné doméně (např. `localhost:5174`) posílá požadavek na jinou doménu (např. `firebasestorage.googleapis.com`), prohlížeč nejprve pošle tzv. **preflight požadavek** (metoda OPTIONS) a ověří, zda cílový server tuto kombinaci domény a metody povoluje. Pokud server neodpoví správnými CORS hlavičkami, prohlížeč požadavek zablokuje — i když by samotný upload technicky prošel.
+
+Typická chyba v konzoli:
+```
+Access to XMLHttpRequest at 'https://firebasestorage.googleapis.com/...' from origin 'http://localhost:5174'
+has been blocked by CORS policy: Response to preflight request doesn't pass access control check.
+```
+
+### Čím může CORS chyba vzniknout
+
+| Příčina | Vysvětlení |
+|---|---|
+| **Špatný název bucketu v `.env`** | Nejčastější příčina. Pokud `VITE_FIREBASE_STORAGE_BUCKET` ukazuje na neexistující nebo jiný bucket (např. `den-pro-brno.firebasestorage.app` místo `den-pro-brno`), požadavky jdou na bucket bez nastavených CORS pravidel. |
+| **CORS pravidla nejsou nakonfigurována** | Nový bucket nemá CORS pravidla — je potřeba je nastavit přes Google Cloud Console nebo `gsutil`. |
+| **Lokalní dev server na jiném portu** | Firebase Storage může mít CORS povolen jen pro konkrétní porty. Při změně portu (`5173` → `5174`) může přestat fungovat. |
+
+### Jak zkontrolovat správný název bucketu
+
+Správnou hodnotu pro `VITE_FIREBASE_STORAGE_BUCKET` najdeš v [Google Cloud Console](https://console.cloud.google.com) → Cloud Storage → Buckets. Hodnota odpovídá **názvu bucketu** zobrazenému v seznamu (pro tento projekt: `den-pro-brno`).
+
+> Tento projekt používá bucket `den-pro-brno` (gsutil URI: `gs://den-pro-brno`). Hodnota v `.env` musí být právě `den-pro-brno` — bez žádné přípony.
+
+### Jak nastavit CORS pravidla na bucketu
+
+Pokud je třeba CORS pravidla nakonfigurovat ručně (nový bucket, migrace), postupuj přes Google Cloud Console:
+
+1. Přejdi na [console.cloud.google.com](https://console.cloud.google.com) → **Cloud Storage → Buckets**
+2. Klikni na bucket → záložka **Configuration**
+3. Vedle řádku **Cross-origin resource sharing (CORS)** klikni na tužku
+4. Vlož tento JSON:
+
+```json
+[
+  {
+    "origin": ["*"],
+    "method": ["GET", "PUT", "POST", "DELETE", "HEAD"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type", "Authorization", "Content-Length", "User-Agent"]
+  }
+]
+```
+
+## 7. Error handling
 
 Chyby z Firestore jsou zachyceny centrálně funkcí `handleFirestoreError` v `Admin.tsx`. Ta rozlišuje tři typy situací — expirovaný token (přesměruje na přihlášení), nedostatečná oprávnění (zobrazí zprávu) a ostatní neočekávané chyby.
 

@@ -354,6 +354,71 @@ const ProgramDashboard = () => {
   const [isHeaderModalOpen, setIsHeaderModalOpen] = useState(false);
   const [headerFormData, setHeaderFormData] = useState({ topTitle: '', description: '' });
   const [isHeaderSubmitting, setIsHeaderSubmitting] = useState(false);
+  const [programImageUrl, setProgramImageUrl] = useState('');
+  const [isProgramImageUploading, setIsProgramImageUploading] = useState(false);
+
+  useEffect(() => {
+    return onSnapshot(doc(db, 'settings', 'programImage'), (snap) => {
+      if (snap.exists()) setProgramImageUrl(snap.data().url || '');
+    });
+  }, []);
+
+  const compressImage = (file: File, maxWidth = 2400): Promise<Blob> =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const scale = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(b => b ? resolve(b) : reject(new Error('Canvas toBlob failed')), 'image/jpeg', 0.88);
+      };
+      img.onerror = reject;
+      img.src = objectUrl;
+    });
+
+  const handleProgramImageUpload = async (file: File) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    setIsProgramImageUploading(true);
+    const oldUrl = programImageUrl;
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout: upload trval příliš dlouho')), 30_000)
+    );
+    try {
+      const toUpload = file.size > 1_000_000 ? await compressImage(file) : file;
+      const ext = file.size > 1_000_000 ? 'jpg' : file.name.split('.').pop() || 'jpg';
+      const storageRef = ref(storage, `settings/program-image-${Date.now()}.${ext}`);
+      const snapshot = await Promise.race([uploadBytes(storageRef, toUpload), timeout]);
+      const url = await Promise.race([getDownloadURL(snapshot.ref), timeout]);
+      await setDoc(doc(db, 'settings', 'programImage'), { url, updatedAt: serverTimestamp() });
+      setProgramImageUrl(url);
+      toast.success('Program byl úspěšně nahrán!');
+      if (oldUrl?.includes('firebasestorage.googleapis.com')) deleteStorageFile(oldUrl);
+    } catch (err: any) {
+      console.error('Program image upload error:', err);
+      toast.error(err?.message?.includes('Timeout') ? 'Upload vypršel — zkus to znovu' : 'Chyba při nahrávání programu');
+    } finally {
+      setIsProgramImageUploading(false);
+    }
+  };
+
+  const handleProgramImageDelete = async () => {
+    if (!programImageUrl) return;
+    setIsProgramImageUploading(true);
+    try {
+      await deleteStorageFile(programImageUrl);
+      await setDoc(doc(db, 'settings', 'programImage'), { url: '', updatedAt: serverTimestamp() });
+      setProgramImageUrl('');
+      toast.success('Program byl odstraněn');
+    } catch (err: any) {
+      toast.error('Chyba při mazání programu');
+    } finally {
+      setIsProgramImageUploading(false);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(db, 'settings', 'programHeader'), (doc) => {
@@ -423,6 +488,70 @@ const ProgramDashboard = () => {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Program Image Upload */}
+      <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm shadow-slate-200/50">
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-left">
+            <h3 className="text-2xl font-black uppercase tracking-tighter text-slate-900">Obrázek programu</h3>
+            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">PNG harmonogram — zobrazí se v sekci Program na webu</p>
+          </div>
+          {programImageUrl && !isProgramImageUploading && (
+            <button
+              onClick={handleProgramImageDelete}
+              className="flex items-center gap-2 px-4 py-2.5 text-xs font-black uppercase tracking-widest text-brand-red bg-brand-red/5 hover:bg-brand-red/10 rounded-xl transition-all"
+            >
+              <Trash2 size={14} /> Odebrat
+            </button>
+          )}
+        </div>
+
+        <label className={`group relative flex flex-col items-center justify-center w-full rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer overflow-hidden ${
+          programImageUrl
+            ? 'border-slate-200 bg-slate-50 p-4'
+            : 'border-slate-200 bg-slate-50 hover:border-brand-teal hover:bg-brand-teal/5 p-14'
+        }`}>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            className="hidden"
+            disabled={isProgramImageUploading}
+            onChange={e => { const f = e.target.files?.[0]; if (f) handleProgramImageUpload(f); e.target.value = ''; }}
+          />
+          {isProgramImageUploading ? (
+            <div className="flex flex-col items-center gap-4 py-8">
+              <Loader2 size={40} className="animate-spin text-brand-teal" />
+              <p className="text-sm font-bold uppercase tracking-widest text-slate-400">Nahrávám...</p>
+            </div>
+          ) : programImageUrl ? (
+            <div className="w-full relative">
+              <img src={programImageUrl} alt="Program festivalu" className="w-full h-auto rounded-xl shadow-md object-contain max-h-[500px]" referrerPolicy="no-referrer" />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <div className="flex items-center gap-3 bg-white/90 backdrop-blur-sm px-6 py-3 rounded-xl shadow-lg">
+                  <Upload size={18} className="text-brand-teal" />
+                  <span className="text-sm font-black uppercase tracking-widest text-slate-900">Nahradit soubor</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-5 text-center">
+              <div className="w-20 h-20 rounded-3xl bg-slate-100 group-hover:bg-brand-teal/10 flex items-center justify-center transition-all">
+                <ImageIcon size={36} className="text-slate-300 group-hover:text-brand-teal transition-colors" />
+              </div>
+              <div>
+                <p className="text-base font-black uppercase tracking-widest text-slate-700">Nahrát obrázek programu</p>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Klikněte nebo přetáhněte soubor sem</p>
+              </div>
+            </div>
+          )}
+        </label>
+
+        {programImageUrl && (
+          <p className="text-center text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-4">
+            Kliknutím na obrázek výše nahrajete nový soubor
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -4653,6 +4782,8 @@ const SettingsManager = () => {
   const [primaryDomain, setPrimaryDomain] = useState('');
   const [gaMeasurementId, setGaMeasurementId] = useState('');
   const [copyrightText, setCopyrightText] = useState('');
+  const [facebookUrl, setFacebookUrl] = useState('');
+  const [instagramUrl, setInstagramUrl] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [eventStartTime, setEventStartTime] = useState('');
   const [eventEndTime, setEventEndTime] = useState('');
@@ -4683,6 +4814,8 @@ const SettingsManager = () => {
         setPrimaryDomain(data.primaryDomain || '');
         setGaMeasurementId(data.gaMeasurementId || '');
         setCopyrightText(data.copyright || '');
+        setFacebookUrl(data.facebookUrl || '');
+        setInstagramUrl(data.instagramUrl || '');
         setEventDate(data.eventDate || '');
         setEventStartTime(data.eventStartTime || '');
         setEventEndTime(data.eventEndTime || '');
@@ -4750,6 +4883,8 @@ const SettingsManager = () => {
         primaryDomain,
         gaMeasurementId,
         copyright: copyrightText,
+        facebookUrl,
+        instagramUrl,
         eventDate,
         eventStartTime,
         eventEndTime,
@@ -4869,6 +5004,20 @@ const SettingsManager = () => {
           <div className="space-y-2">
             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Copyright</label>
             <input value={copyrightText} onChange={e => setCopyrightText(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-900 focus:border-brand-teal outline-none transition-all" />
+          </div>
+
+          <div className="pt-6 border-t border-slate-100 space-y-4">
+            <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Sociální sítě</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Facebook URL</label>
+                <input placeholder="https://facebook.com/..." value={facebookUrl} onChange={e => setFacebookUrl(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-900 focus:border-brand-teal outline-none transition-all" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">Instagram URL</label>
+                <input placeholder="https://instagram.com/..." value={instagramUrl} onChange={e => setInstagramUrl(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 text-slate-900 focus:border-brand-teal outline-none transition-all" />
+              </div>
+            </div>
           </div>
 
           <div className="pt-6 border-t border-slate-100 space-y-6">
